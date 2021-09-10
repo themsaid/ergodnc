@@ -9,7 +9,9 @@
     - Routes
     - Controller
     - Tests
-[] Offices
-    - List offices
-    - Read office
-    - Create office
+
+# TODO NEXT
+[] Filter the offices returned
+[] Paginate the list offices endpoint
+[] Show office endpoint
+[] create office endpoint
