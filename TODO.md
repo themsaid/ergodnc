@@ -1,7 +1,7 @@
 # TODO 10/9
 
-[] Prepare migrations
-[] Seed the initial tags
+[x] Prepare migrations
+[x] Seed the initial tags
 [] Prepare models
 [] Prepare factories
 [] Prepare resources

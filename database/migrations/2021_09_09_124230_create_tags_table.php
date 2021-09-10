@@ -17,6 +17,10 @@ class CreateTagsTable extends Migration
             $table->id();
             $table->string('name');
         });
+
+        \App\Models\Tag::create(['name' => 'has_ac']);
+        \App\Models\Tag::create(['name' => 'has_private_bathroom']);
+        \App\Models\Tag::create(['name' => 'has_coffee_machine']);
     }
 
     /**
