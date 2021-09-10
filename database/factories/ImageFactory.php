@@ -22,7 +22,7 @@ class ImageFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'path' => 'image.png'
         ];
     }
 }

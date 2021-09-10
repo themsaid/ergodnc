@@ -18,10 +18,10 @@ class CreateOfficesTable extends Migration
             $table->foreignId('user_id')->index();
             $table->string('title');
             $table->text('description');
-            $table->decimal('lat', 10, 8);
-            $table->decimal('lng', 10, 8);
+            $table->decimal('lat', 11, 8);
+            $table->decimal('lng', 11, 8);
             $table->text('address_line1');
-            $table->text('address_line2');
+            $table->text('address_line2')->nullable();
             $table->tinyInteger('approval_status')->default(1);
             $table->boolean('hidden')->default(false);
             $table->integer('price_per_day');
