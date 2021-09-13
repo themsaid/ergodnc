@@ -5,7 +5,7 @@
 [x] Filter by hosts
 [x] Filter by users
 [x] Include tags, images, and user
-[] Show count of previous reservations
+[x] Show count of previous reservations
 [x] Paginate
 [] Sort by distance if lng/lat provided. Otherwise, oldest first.
 ## Show office endpoint

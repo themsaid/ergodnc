@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,5 +46,15 @@ class Office extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'offices_tags');
+    }
+
+    public function scopeNearestTo(Builder $builder, $lat, $lng)
+    {
+        return $builder
+            ->select()
+            ->selectRaw(
+                'SQRT(POW(69.1 * (lat - ?), 2) + POW(69.1 * (? - lng) * COS(lat / 57.3), 2)) AS distance',
+                [$lat, $lng]
+            )->orderBy('distance');
     }
 }
