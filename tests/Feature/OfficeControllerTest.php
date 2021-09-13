@@ -174,6 +174,8 @@ class OfficeControllerTest extends TestCase
 
         $response = $this->get('/api/offices/'.$office->id);
 
+        $response->dump();
+
         $this->assertEquals(1, $response->json('data')['reservations_count']);
         $this->assertIsArray($response->json('data')['tags']);
         $this->assertCount(1, $response->json('data')['tags']);
