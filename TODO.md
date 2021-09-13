@@ -1,12 +1,12 @@
 # TODO
 
 ## List Offices Endpoint
-[] Show only approved and visible records
-[] Filter by hosts
-[] Filter by users
-[] Include tags, images, and user
+[x] Show only approved and visible records
+[x] Filter by hosts
+[x] Filter by users
+[x] Include tags, images, and user
 [] Show count of previous reservations
-[] Paginate
+[x] Paginate
 [] Sort by distance if lng/lat provided. Otherwise, oldest first.
 ## Show office endpoint
 [] Show count of previous reservations
