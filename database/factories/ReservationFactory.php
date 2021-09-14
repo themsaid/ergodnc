@@ -21,15 +21,29 @@ class ReservationFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'user_id' => User::factory(),
             'office_id' => Office::factory(),
             'price' => $this->faker->numberBetween(10_000, 20_000),
             'status' => Reservation::STATUS_ACTIVE,
-            'start_date' => now()->addDay(1)->format('Y-m-d'),
-            'end_date' => now()->addDay(5)->format('Y-m-d'),
+            'start_date' => now()->addDay()->format('Y-m-d'),
+            'end_date' => now()->addDays(5)->format('Y-m-d'),
         ];
+    }
+
+    /**
+     * Sets the model's reservation status as 'cancelled'.
+     *
+     * @return Factory
+     */
+    public function cancelled(): Factory
+    {
+        return $this->state(function () {
+            return [
+                'status' => Reservation::STATUS_CANCELLED,
+            ];
+        });
     }
 }
