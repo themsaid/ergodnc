@@ -12,7 +12,6 @@
 [] Host must be authenticated & email verified
 [] Token (if exists) must allow `office.create`
 [] Validation
-  - Cannot fill `approval_status`
 
 ## Office Photos
 
@@ -27,7 +26,6 @@
 [] Token (if exists) must allow `office.update`
 [] Can only update their own offices
 [] Validation
-  - Cannot update `approval_status`
 
 ## Delete Office Endpoint
 
