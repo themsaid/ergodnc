@@ -2,21 +2,21 @@
 
 ## List Offices Endpoint
 
-[] Change the user_id filter to visitor_id and host_id to user_id
-[] Switch to using Custom Polymorphic Types
-[] Order by distance but don't include the distance attribute
-[] Configure the resources
+[x] Change the user_id filter to visitor_id and host_id to user_id
+[x] Switch to using Custom Polymorphic Types
+[x] Order by distance but don't include the distance attribute
+[x] Configure the resources
 
 ## Create Office Endpoint
 
-[] Host must be authenticated & email verified
-[] Token (if exists) must allow `office.create`
-[] Validation
+[x] Host must be authenticated & email verified
+[x] Token (if exists) must allow `office.create`
+[x] Validation
 
 ## Office Photos
 
 [] Attaching photos to an office
-[] Allow choose a photo to become the featured photo
+[] Allow choosing a photo to become the featured photo
 [] Deleting a photo
   - Must have at least one photo if it's approved. 
 
