@@ -56,6 +56,7 @@ class OfficeController extends Controller
                 'lat' => ['required', 'numeric'],
                 'lng' => ['required', 'numeric'],
                 'address_line1' => ['required', 'string'],
+                'address_line2' => ['string'],
                 'hidden' => ['bool'],
                 'price_per_day' => ['required', 'integer', 'min:100'],
                 'monthly_discount' => ['integer', 'min:0', 'max:90'],
