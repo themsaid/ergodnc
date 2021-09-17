@@ -210,7 +210,7 @@ class OfficeControllerTest extends TestCase
     {
         $user = User::factory()->createQuietly();
 
-        Sanctum::actingAs($user, ['']);
+        Sanctum::actingAs($user, []);
 
         $response = $this->postJson('/api/offices');
 
