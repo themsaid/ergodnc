@@ -92,11 +92,7 @@ class OfficeControllerTest extends TestCase
     public function itIncludesImagesTagsAndUser()
     {
         $user = User::factory()->create();
-        $tag = Tag::factory()->create();
-        $office = Office::factory()->for($user)->create();
-
-        $office->tags()->attach($tag);
-        $office->images()->create(['path' => 'image.jpg']);
+        Office::factory()->for($user)->hasTags(1)->hasImages(1)->create();
 
         $response = $this->get('/api/offices');
 
