@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class OfficeControllerTest extends TestCase
@@ -218,12 +219,24 @@ class OfficeControllerTest extends TestCase
     {
         $user = User::factory()->createQuietly();
 
-        $token = $user->createToken('test', []);
+        Sanctum::actingAs($user, ['']);
 
-        $response = $this->postJson('/api/offices', [], [
-            'Authorization' => 'Bearer '.$token->plainTextToken
-        ]);
+        $response = $this->postJson('/api/offices');
 
         $response->assertStatus(403);
+    }
+
+    /**
+     * @test
+     */
+    public function itAllowsCreatingIfScopeIsProvided()
+    {
+        $user = User::factory()->createQuietly();
+
+        Sanctum::actingAs($user, ['office.create']);
+
+        $response = $this->postJson('/api/offices');
+
+        $this->assertNotEquals(403, $response->status());
     }
 }

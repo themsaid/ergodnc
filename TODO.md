@@ -1,17 +1,8 @@
 # TODO
 
-## List Offices Endpoint
-
-[x] Change the user_id filter to visitor_id and host_id to user_id
-[x] Switch to using Custom Polymorphic Types
-[x] Order by distance but don't include the distance attribute
-[x] Configure the resources
-
 ## Create Office Endpoint
 
-[x] Host must be authenticated & email verified
-[x] Token (if exists) must allow `office.create`
-[x] Validation
+[] Store inside a database transaction  
 
 ## Office Photos
 
