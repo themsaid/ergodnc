@@ -33,17 +33,10 @@ class ReservationFactory extends Factory
         ];
     }
 
-    /**
-     * Sets the model's reservation status as 'cancelled'.
-     *
-     * @return Factory
-     */
     public function cancelled(): Factory
     {
-        return $this->state(function () {
-            return [
-                'status' => Reservation::STATUS_CANCELLED,
-            ];
-        });
+        return $this->state([
+            'status' => Reservation::STATUS_CANCELLED,
+        ]);
     }
 }
