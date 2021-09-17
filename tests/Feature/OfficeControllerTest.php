@@ -214,7 +214,7 @@ class OfficeControllerTest extends TestCase
 
         $response = $this->postJson('/api/offices');
 
-        $response->assertStatus(403);
+        $response->assertForbidden();
     }
 
     /**
@@ -228,6 +228,6 @@ class OfficeControllerTest extends TestCase
 
         $response = $this->postJson('/api/offices');
 
-        $this->assertNotEquals(403, $response->status());
+        $this->assertFalse($response->isForbidden());
     }
 }
