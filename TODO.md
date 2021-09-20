@@ -1,15 +1,11 @@
 # TODO
 
+[] Office approval status should be pending or approved only ... no rejected
+
 ## Create Office Endpoint
 
-[] Store inside a database transaction  
-
-## Office Photos
-
-[] Attaching photos to an office
-[] Allow choosing a photo to become the featured photo
-[] Deleting a photo
-  - Must have at least one photo if it's approved. 
+[] Store inside a database transaction
+[] Notify admin on new office
 
 ## Update Office Endpoint
 
@@ -17,6 +13,7 @@
 [] Token (if exists) must allow `office.update`
 [] Can only update their own offices
 [] Validation
+[] Mark as pending when critical attributes are updated and notify admin
 
 ## Delete Office Endpoint
 
@@ -24,6 +21,12 @@
 [] Token (if exists) must allow `office.delete`
 [] Can only delete their own offices
 [] Cannot delete an office that has a reservation
+
+## Office Photos
+
+[] Attaching photos to an office
+[] Allow choosing a photo to become the featured photo
+[] Deleting a photo — Must have at least one photo if it's approved.
 
 ## List Reservations Endpoint
 
