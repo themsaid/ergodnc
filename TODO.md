@@ -1,18 +1,18 @@
 # TODO
 
-[] Office approval status should be pending or approved only ... no rejected
+[x] Office approval status should be pending or approved only ... no rejected
+[x] Store office inside a database transaction
 
 ## Update Office Endpoint
 
-[] Must be authenticated & email verified
-[] Token (if exists) must allow `office.update`
-[] Can only update their own offices
-[] Validation
+[x] Must be authenticated & email verified
+[x] Token (if exists) must allow `office.update`
+[x] Can only update their own offices
+[x] Validation
 [] Mark as pending when critical attributes are updated and notify admin
 
 ## Create Office Endpoint
 
-[] Store inside a database transaction
 [] Notify admin on new office
 
 ## Delete Office Endpoint
