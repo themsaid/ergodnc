@@ -6,8 +6,10 @@ use App\Models\Office;
 use App\Models\Reservation;
 use App\Models\Tag;
 use App\Models\User;
+use App\Notifications\OfficePendingApproval;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -176,6 +178,10 @@ class OfficeControllerTest extends TestCase
      */
     public function itCreatesAnOffice()
     {
+        Notification::fake();
+
+        $admin = User::factory()->create(['name' => 'Mohamed']);
+
         $user = User::factory()->create();
         $tags = Tag::factory(2)->create();
 
@@ -194,6 +200,8 @@ class OfficeControllerTest extends TestCase
         $this->assertDatabaseHas('offices', [
             'id' => $response->json('data.id')
         ]);
+
+        Notification::assertSentTo($admin, OfficePendingApproval::class);
     }
 
     /**
@@ -267,5 +275,72 @@ class OfficeControllerTest extends TestCase
         ]);
 
         $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     * @test
+     */
+    public function itMarksTheOfficeAsPendingIfDirty()
+    {
+        $admin = User::factory()->create(['name' => 'Mohamed']);
+
+        Notification::fake();
+
+        $user = User::factory()->create();
+        $office = Office::factory()->for($user)->create();
+
+        $this->actingAs($user);
+
+        $response = $this->putJson('/api/offices/'.$office->id, [
+            'lat' => 40.74051727562952
+        ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('offices', [
+            'id' => $office->id,
+            'approval_status' => Office::APPROVAL_PENDING,
+        ]);
+
+        Notification::assertSentTo($admin, OfficePendingApproval::class);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanDeleteOffices()
+    {
+        $user = User::factory()->create();
+        $office = Office::factory()->for($user)->create();
+
+        $this->actingAs($user);
+
+        $response = $this->deleteJson('/api/offices/'.$office->id);
+
+        $response->assertOk();
+
+        $this->assertSoftDeleted($office);
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotDeleteAnOfficeThatHasReservations()
+    {
+        $user = User::factory()->create();
+        $office = Office::factory()->for($user)->create();
+
+        Reservation::factory(3)->for($office)->create();
+
+        $this->actingAs($user);
+
+        $response = $this->deleteJson('/api/offices/'.$office->id);
+
+        $response->assertUnprocessable();
+
+        $this->assertDatabaseHas('offices', [
+            'id' => $office->id,
+            'deleted_at' => null
+        ]);
     }
 }

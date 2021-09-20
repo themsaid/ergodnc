@@ -1,26 +1,6 @@
 # TODO
 
-[x] Office approval status should be pending or approved only ... no rejected
-[x] Store office inside a database transaction
-
-## Update Office Endpoint
-
-[x] Must be authenticated & email verified
-[x] Token (if exists) must allow `office.update`
-[x] Can only update their own offices
-[x] Validation
-[] Mark as pending when critical attributes are updated and notify admin
-
-## Create Office Endpoint
-
-[] Notify admin on new office
-
-## Delete Office Endpoint
-
-[] Must be authenticated & email verified
-[] Token (if exists) must allow `office.delete`
-[] Can only delete their own offices
-[] Cannot delete an office that has a reservation
+[] Identify who an admin is by adding an `is_admin` attribute to the users table.
 
 ## Office Photos
 
