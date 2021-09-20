@@ -2,11 +2,6 @@
 
 [] Office approval status should be pending or approved only ... no rejected
 
-## Create Office Endpoint
-
-[] Store inside a database transaction
-[] Notify admin on new office
-
 ## Update Office Endpoint
 
 [] Must be authenticated & email verified
@@ -14,6 +9,11 @@
 [] Can only update their own offices
 [] Validation
 [] Mark as pending when critical attributes are updated and notify admin
+
+## Create Office Endpoint
+
+[] Store inside a database transaction
+[] Notify admin on new office
 
 ## Delete Office Endpoint
 
