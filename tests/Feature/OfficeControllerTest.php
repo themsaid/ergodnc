@@ -215,7 +215,7 @@ class OfficeControllerTest extends TestCase
 
         $response = $this->postJson('/api/offices');
 
-        $response->assertStatus(403);
+        $response->assertForbidden();
     }
 
     /**
@@ -228,7 +228,7 @@ class OfficeControllerTest extends TestCase
         Sanctum::actingAs($user, ['office.create']);
 
         $response = $this->postJson('/api/offices');
-
+      
         $this->assertNotEquals(Response::HTTP_FORBIDDEN, $response->status());
     }
 
