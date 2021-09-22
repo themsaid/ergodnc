@@ -6,7 +6,10 @@ use App\Models\Office;
 use App\Models\Reservation;
 use App\Models\Tag;
 use App\Models\User;
+use App\Notifications\OfficePendingApproval;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -175,32 +178,30 @@ class OfficeControllerTest extends TestCase
      */
     public function itCreatesAnOffice()
     {
-        $user = User::factory()->createQuietly();
+        Notification::fake();
+
+        $admin = User::factory()->create(['name' => 'Mohamed']);
+
+        $user = User::factory()->create();
         $tags = Tag::factory(2)->create();
 
         $this->actingAs($user);
 
-        $response = $this->postJson('/api/offices', [
-            'title' => 'Office in Arkansas',
-            'description' => 'Description',
-            'lat' => '39.74051727562952',
-            'lng' => '-8.770375324893696',
-            'address_line1' => 'address',
-            'price_per_day' => 10_000,
-            'monthly_discount' => 5,
+        $response = $this->postJson('/api/offices', Office::factory()->raw([
             'tags' => $tags->pluck('id')->toArray()
-        ]);
+        ]));
 
         $response->assertCreated()
-            ->assertJsonPath('data.title', 'Office in Arkansas')
             ->assertJsonPath('data.approval_status', Office::APPROVAL_PENDING)
             ->assertJsonPath('data.reservations_count', 0)
             ->assertJsonPath('data.user.id', $user->id)
             ->assertJsonCount(2, 'data.tags');
 
         $this->assertDatabaseHas('offices', [
-            'title' => 'Office in Arkansas'
+            'id' => $response->json('data.id')
         ]);
+
+        Notification::assertSentTo($admin, OfficePendingApproval::class);
     }
 
     /**
@@ -208,7 +209,7 @@ class OfficeControllerTest extends TestCase
      */
     public function itDoesntAllowCreatingIfScopeIsNotProvided()
     {
-        $user = User::factory()->createQuietly();
+        $user = User::factory()->create();
 
         Sanctum::actingAs($user, []);
 
@@ -222,12 +223,124 @@ class OfficeControllerTest extends TestCase
      */
     public function itAllowsCreatingIfScopeIsProvided()
     {
-        $user = User::factory()->createQuietly();
+        $user = User::factory()->create();
 
         Sanctum::actingAs($user, ['office.create']);
 
         $response = $this->postJson('/api/offices');
+      
+        $this->assertNotEquals(Response::HTTP_FORBIDDEN, $response->status());
+    }
 
-        $this->assertFalse($response->isForbidden());
+    /**
+     * @test
+     */
+    public function itUpdatesAnOffice()
+    {
+        $user = User::factory()->create();
+        $tags = Tag::factory(3)->create();
+        $office = Office::factory()->for($user)->create();
+
+        $office->tags()->attach($tags);
+
+        $this->actingAs($user);
+
+        $anotherTag = Tag::factory()->create();
+
+        $response = $this->putJson('/api/offices/'.$office->id, [
+            'title' => 'Amazing Office',
+            'tags' => [$tags[0]->id, $anotherTag->id]
+        ]);
+
+        $response->assertOk()
+            ->assertJsonCount(2, 'data.tags')
+            ->assertJsonPath('data.tags.0.id', $tags[0]->id)
+            ->assertJsonPath('data.tags.1.id', $anotherTag->id)
+            ->assertJsonPath('data.title', 'Amazing Office');
+    }
+
+    /**
+     * @test
+     */
+    public function itDoesntUpdateOfficeThatDoesntBelongToUser()
+    {
+        $user = User::factory()->create();
+        $anotherUser = User::factory()->create();
+        $office = Office::factory()->for($anotherUser)->create();
+
+        $this->actingAs($user);
+
+        $response = $this->putJson('/api/offices/'.$office->id, [
+            'title' => 'Amazing Office'
+        ]);
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     * @test
+     */
+    public function itMarksTheOfficeAsPendingIfDirty()
+    {
+        $admin = User::factory()->create(['name' => 'Mohamed']);
+
+        Notification::fake();
+
+        $user = User::factory()->create();
+        $office = Office::factory()->for($user)->create();
+
+        $this->actingAs($user);
+
+        $response = $this->putJson('/api/offices/'.$office->id, [
+            'lat' => 40.74051727562952
+        ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('offices', [
+            'id' => $office->id,
+            'approval_status' => Office::APPROVAL_PENDING,
+        ]);
+
+        Notification::assertSentTo($admin, OfficePendingApproval::class);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanDeleteOffices()
+    {
+        $user = User::factory()->create();
+        $office = Office::factory()->for($user)->create();
+
+        $this->actingAs($user);
+
+        $response = $this->deleteJson('/api/offices/'.$office->id);
+
+        $response->assertOk();
+
+        $this->assertSoftDeleted($office);
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotDeleteAnOfficeThatHasReservations()
+    {
+        $user = User::factory()->create();
+        $office = Office::factory()->for($user)->create();
+
+        Reservation::factory(3)->for($office)->create();
+
+        $this->actingAs($user);
+
+        $response = $this->deleteJson('/api/offices/'.$office->id);
+
+        $response->assertUnprocessable();
+
+        $this->assertDatabaseHas('offices', [
+            'id' => $office->id,
+            'deleted_at' => null
+        ]);
     }
 }

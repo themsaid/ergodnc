@@ -43,13 +43,6 @@ class OfficeFactory extends Factory
         ]);
     }
 
-    public function rejected(): Factory
-    {
-        return $this->state([
-            'approval_status' => Office::APPROVAL_REJECTED,
-        ]);
-    }
-
     public function hidden(): Factory
     {
         return $this->state([
