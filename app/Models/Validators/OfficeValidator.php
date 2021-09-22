@@ -16,6 +16,7 @@ class OfficeValidator
                 'lat' => [Rule::when($office->exists, 'sometimes'), 'required', 'numeric'],
                 'lng' => [Rule::when($office->exists, 'sometimes'), 'required', 'numeric'],
                 'address_line1' => [Rule::when($office->exists, 'sometimes'), 'required', 'string'],
+                'address_line2' => ['string'],
                 'price_per_day' => [Rule::when($office->exists, 'sometimes'), 'required', 'integer', 'min:100'],
 
                 'hidden' => ['bool'],
