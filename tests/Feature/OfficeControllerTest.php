@@ -180,7 +180,7 @@ class OfficeControllerTest extends TestCase
     {
         Notification::fake();
 
-        $admin = User::factory()->create(['name' => 'Mohamed']);
+        $admin = User::factory()->create(['is_admin' => true]);
 
         $user = User::factory()->create();
         $tags = Tag::factory(2)->create();
@@ -228,7 +228,7 @@ class OfficeControllerTest extends TestCase
         Sanctum::actingAs($user, ['office.create']);
 
         $response = $this->postJson('/api/offices');
-      
+
         $this->assertNotEquals(Response::HTTP_FORBIDDEN, $response->status());
     }
 
@@ -282,7 +282,7 @@ class OfficeControllerTest extends TestCase
      */
     public function itMarksTheOfficeAsPendingIfDirty()
     {
-        $admin = User::factory()->create(['name' => 'Mohamed']);
+        $admin = User::factory()->create(['is_admin' => true]);
 
         Notification::fake();
 
