@@ -12,3 +12,7 @@ Route::get('/offices/{office}', [\App\Http\Controllers\OfficeController::class, 
 Route::post('/offices', [\App\Http\Controllers\OfficeController::class, 'create'])->middleware(['auth:sanctum', 'verified']);
 Route::put('/offices/{office}', [\App\Http\Controllers\OfficeController::class, 'update'])->middleware(['auth:sanctum', 'verified']);
 Route::delete('/offices/{office}', [\App\Http\Controllers\OfficeController::class, 'delete'])->middleware(['auth:sanctum', 'verified']);
+
+// Office Photos...
+Route::post('/offices/{office}/images', [\App\Http\Controllers\OfficeImageController::class, 'store'])->middleware(['auth:sanctum', 'verified']);
+Route::delete('/offices/{office}/images/{image}', [\App\Http\Controllers\OfficeImageController::class, 'delete'])->middleware(['auth:sanctum', 'verified']);

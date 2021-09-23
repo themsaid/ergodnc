@@ -5,9 +5,9 @@
 
 ## Office Photos
 
-[] Attaching photos to an office
-[] Allow choosing a photo to become the featured photo
-[] Deleting a photo — Must have at least one photo if it's approved.
+[x] Attaching photos to an office
+[x] Allow choosing a photo to become the featured photo
+[x] Deleting a photo — Must have at least one photo if it's approved.
 
 ## List Reservations Endpoint
 
