@@ -1,6 +1,7 @@
 # TODO
 
 [] Identify who an admin is by adding an `is_admin` attribute to the users table.
+[] Show hidden and unapproved offices when filtering by `user_id` and the auth user matches the user so hosts can see all their listings
 
 ## Office Photos
 
