@@ -51,6 +51,26 @@ class OfficeControllerTest extends TestCase
     /**
      * @test
      */
+    public function itListsOfficesIncludingHiddenAndUnApprovedIfFilteringForTheCurrentLoggedInUser()
+    {
+        $user = User::factory()->create();
+
+        Office::factory(3)->for($user)->create();
+
+        Office::factory()->hidden()->for($user)->create();
+        Office::factory()->pending()->for($user)->create();
+
+        $this->actingAs($user);
+
+        $response = $this->get('/api/offices?user_id='.$user->id);
+
+        $response->assertOk()
+            ->assertJsonCount(5, 'data');
+    }
+
+    /**
+     * @test
+     */
     public function itFiltersByUserId()
     {
         Office::factory(3)->create();
