@@ -1,21 +1,17 @@
 # TODO
 
-[x] Identify who an admin is by adding an `is_admin` attribute to the users table.
-[x] Show hidden and unapproved offices when filtering by `user_id` and the auth user matches the user so hosts can see all their listings
-
-## Office Photos
-
-[x] Attaching photos to an office
-[x] Allow choosing a photo to become the featured photo
-[x] Deleting a photo — Must have at least one photo if it's approved.
+[] Delete all images when deleting an office
+[] Use the default disk to store public images so it's easier to switch to different drivers in production
+[] Use keyed implicit binding in the office image routes so laravel scopes to the office that the image belongs to [Tweet](https://twitter.com/themsaid/status/1441323002222637062)
+[] Switch to using Sanctum guard by default
 
 ## List Reservations Endpoint
 
 [] Must be authenticated & email verified
 [] Token (if exists) must allow `reservations.show`
 [] Can only list their own reservations or reservations on their offices
-[] Allow filtering by office_id
-[] Allow filtering by user_id
+[] Allow filtering by office_id only for authenticated host
+[] Allow filtering by user_id only for authenticated user
 [] Allow filtering by date range
 [] Allow filtering by status
 [] Paginate
