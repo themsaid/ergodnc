@@ -83,9 +83,7 @@ class OfficeImageControllerTest extends TestCase
 
         $response = $this->deleteJson("/api/offices/{$office->id}/images/{$image->id}");
 
-        $response->assertUnprocessable();
-
-        $response->assertJsonValidationErrors(['image' => 'Cannot delete this image.']);
+        $response->assertNotFound();
     }
 
     /**

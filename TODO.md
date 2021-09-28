@@ -1,14 +1,16 @@
 # TODO
 
+[] Switch to using Sanctum guard by default
+
+
 [x] Delete all images when deleting an office
 [x] Use the default disk to store public images so it's easier to switch to different drivers in production
-[] Switch to using Sanctum guard by default
-[] Use keyed implicit binding in the office image routes so laravel scopes to the office that the image belongs to [Tweet](https://twitter.com/themsaid/status/1441323002222637062)
+[x] Use keyed implicit binding in the office image routes so laravel scopes to the office that the image belongs to [Tweet](https://twitter.com/themsaid/status/1441323002222637062)
 
 ## List Reservations Endpoint
 
-[] Must be authenticated & email verified
-[] Token (if exists) must allow `reservations.show`
+[x] Must be authenticated & email verified
+[x] Token (if exists) must allow `reservations.show`
 [] Can only list their own reservations or reservations on their offices
 [] Allow filtering by office_id only for authenticated host
 [] Allow filtering by user_id only for authenticated user
