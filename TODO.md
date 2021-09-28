@@ -1,7 +1,7 @@
 # TODO
 
-[] Delete all images when deleting an office
-[] Use the default disk to store public images so it's easier to switch to different drivers in production
+[x] Delete all images when deleting an office
+[x] Use the default disk to store public images so it's easier to switch to different drivers in production
 [] Switch to using Sanctum guard by default
 [] Use keyed implicit binding in the office image routes so laravel scopes to the office that the image belongs to [Tweet](https://twitter.com/themsaid/status/1441323002222637062)
 
