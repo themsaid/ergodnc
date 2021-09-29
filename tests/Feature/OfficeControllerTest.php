@@ -206,7 +206,7 @@ class OfficeControllerTest extends TestCase
         $user = User::factory()->create();
         $tags = Tag::factory(2)->create();
 
-        $this->actingAs($user);
+        Sanctum::actingAs($user, ['*']);
 
         $response = $this->postJson('/api/offices', Office::factory()->raw([
             'tags' => $tags->pluck('id')->toArray()

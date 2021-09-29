@@ -1,11 +1,10 @@
 # TODO
 
 [] Switch to using Sanctum guard by default
+[] Filter offices by tag
+[] Use the new [assertNotSoftDeleted](https://github.com/laravel/framework/pull/38886) method
+[] Use the new RefreshDatabaseLazily testing trait on the base test class
 
-
-[x] Delete all images when deleting an office
-[x] Use the default disk to store public images so it's easier to switch to different drivers in production
-[x] Use keyed implicit binding in the office image routes so laravel scopes to the office that the image belongs to [Tweet](https://twitter.com/themsaid/status/1441323002222637062)
 
 ## List Reservations Endpoint
 
