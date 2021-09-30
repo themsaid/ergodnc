@@ -1,7 +1,6 @@
 # TODO
 
 [] Switch to using Sanctum guard by default
-[] Filter offices by tag
 [] Use the new [assertNotSoftDeleted](https://github.com/laravel/framework/pull/38886) method
 [] Use the new RefreshDatabaseLazily testing trait on the base test class
 
@@ -35,4 +34,8 @@
 [] Can only cancel their own reservation
 [] Can only cancel an active reservation that has a start_date in the future
 
-## Handle Billing with Cashier
+## Housekeeping
+
+[] Filter offices by tag
+[] API should return the full URI of the image so that the consumer
+

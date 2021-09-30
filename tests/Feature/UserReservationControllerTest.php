@@ -17,7 +17,7 @@ class UserReservationControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $reservation = Reservation::factory()->for($user)->create();
+        [$reservation] = Reservation::factory()->for($user)->count(2)->create();
 
         $image = $reservation->office->images()->create([
             'path' => 'office_image.jpg'
@@ -25,7 +25,6 @@ class UserReservationControllerTest extends TestCase
 
         $reservation->office()->update(['featured_image_id' => $image->id]);
 
-        Reservation::factory()->for($user)->count(2)->create();
         Reservation::factory()->count(3)->create();
 
         $this->actingAs($user);
@@ -34,7 +33,7 @@ class UserReservationControllerTest extends TestCase
 
         $response
             ->assertJsonStructure(['data', 'meta', 'links'])
-            ->assertJsonCount(3, 'data')
+            ->assertJsonCount(2, 'data')
             ->assertJsonStructure(['data' => ['*' => ['id', 'office']]])
             ->assertJsonPath('data.0.office.featured_image.id', $image->id);
     }
