@@ -1,20 +1,20 @@
 # TODO
 
-[] Switch to using Sanctum guard by default
-[] Use the new [assertNotSoftDeleted](https://github.com/laravel/framework/pull/38886) method
-[] Use the new RefreshDatabaseLazily testing trait on the base test class
+[x] Switch to using Sanctum guard by default
+[x] Use the new [assertNotSoftDeleted](https://github.com/laravel/framework/pull/38886) method
+[x] Use the new LazilyRefreshDatabase testing trait on the base test class
 
 
 ## List Reservations Endpoint
 
 [x] Must be authenticated & email verified
 [x] Token (if exists) must allow `reservations.show`
-[] Can only list their own reservations or reservations on their offices
-[] Allow filtering by office_id only for authenticated host
-[] Allow filtering by user_id only for authenticated user
-[] Allow filtering by date range
-[] Allow filtering by status
-[] Paginate
+[x] Can only list their own reservations or reservations on their offices
+[x] Allow filtering by office_id only for authenticated host
+[x] Allow filtering by user_id only for authenticated user
+[x] Allow filtering by date range
+[x] Allow filtering by status
+[x] Paginate
 
 ## Make Reservations Endpoint
 
@@ -36,6 +36,7 @@
 
 ## Housekeeping
 
+[] Convert filtering reservations by date to Eloquent Scopes
 [] Filter offices by tag
 [] API should return the full URI of the image so that the consumer
 

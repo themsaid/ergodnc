@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use App\Models\Tag;
 use App\Models\User;
 use App\Notifications\OfficePendingApproval;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Notification;
@@ -16,7 +17,7 @@ use Tests\TestCase;
 
 class OfficeControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use LazilyRefreshDatabase;
 
     /**
      * @test
@@ -413,9 +414,6 @@ class OfficeControllerTest extends TestCase
 
         $response->assertUnprocessable();
 
-        $this->assertDatabaseHas('offices', [
-            'id' => $office->id,
-            'deleted_at' => null
-        ]);
+        $this->assertNotSoftDeleted($office);
     }
 }
