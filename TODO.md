@@ -1,7 +1,7 @@
 # TODO
 
-[] Convert filtering reservations by date to Eloquent Scopes
-[] Include reservations that started before range and ended after range while filtering
+[x] Convert filtering reservations by date to Eloquent Scopes
+[x] Include reservations that started before range and ended after range while filtering
 
 ## Make Reservations Endpoint
 
