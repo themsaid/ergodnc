@@ -153,4 +153,33 @@ class UserReservationControllerTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $reservation->id);
     }
+
+    /**
+     * @test
+     */
+    public function itMakesReservations()
+    {
+        $user = User::factory()->create();
+
+        $office = Office::factory()->create([
+            'price_per_day' => 1_000,
+            'monthly_discount' => 10,
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->postJson('/api/reservations', [
+            'office_id' => $office->id,
+            'start_date' => now()->addDays(1),
+            'end_date' => now()->addDays(41),
+        ]);
+
+
+        $response->assertCreated();
+
+        $response->assertJsonPath('data.price', 36000)
+            ->assertJsonPath('data.user_id', $user->id)
+            ->assertJsonPath('data.office_id', $office->id)
+            ->assertJsonPath('data.status', Reservation::STATUS_ACTIVE);
+    }
 }
