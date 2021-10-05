@@ -170,7 +170,7 @@ class UserReservationControllerTest extends TestCase
 
         $response = $this->postJson('/api/reservations', [
             'office_id' => $office->id,
-            'start_date' => now()->addDays(1),
+            'start_date' => now()->addDay(),
             'end_date' => now()->addDays(40),
         ]);
 
@@ -193,7 +193,7 @@ class UserReservationControllerTest extends TestCase
 
         $response = $this->postJson('/api/reservations', [
             'office_id' => 10000,
-            'start_date' => now()->addDays(1),
+            'start_date' => now()->addDay(),
             'end_date' => now()->addDays(41),
         ]);
 
@@ -214,7 +214,7 @@ class UserReservationControllerTest extends TestCase
 
         $response = $this->postJson('/api/reservations', [
             'office_id' => $office->id,
-            'start_date' => now()->addDays(1),
+            'start_date' => now()->addDay(),
             'end_date' => now()->addDays(41),
         ]);
 
@@ -235,8 +235,8 @@ class UserReservationControllerTest extends TestCase
 
         $response = $this->postJson('/api/reservations', [
             'office_id' => $office->id,
-            'start_date' => now()->addDays(1),
-            'end_date' => now()->addDays(1),
+            'start_date' => now()->addDay(),
+            'end_date' => now()->addDay(),
         ]);
 
         $response->assertUnprocessable()
@@ -256,7 +256,7 @@ class UserReservationControllerTest extends TestCase
 
         $response = $this->postJson('/api/reservations', [
             'office_id' => $office->id,
-            'start_date' => now()->addDays(1),
+            'start_date' => now()->addDay(),
             'end_date' => now()->addDays(2),
         ]);
 
@@ -270,8 +270,8 @@ class UserReservationControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $fromDate = now()->addDay(1)->toDateString();
-        $toDate = now()->addDay(15)->toDateString();
+        $fromDate = now()->addDay()->toDateString();
+        $toDate = now()->addDays(15)->toDateString();
 
         $office = Office::factory()->create();
 
