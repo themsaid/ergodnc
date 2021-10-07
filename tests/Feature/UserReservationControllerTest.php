@@ -240,7 +240,7 @@ class UserReservationControllerTest extends TestCase
         ]);
 
         $response->assertUnprocessable()
-            ->assertJsonValidationErrors(['start_date' => 'You cannot make a reservation for only 1 day']);
+            ->assertJsonValidationErrors(['end_date' => 'The end date must be a date after start date.']);
     }
 
     /**
@@ -270,7 +270,7 @@ class UserReservationControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $fromDate = now()->addDay(1)->toDateString();
+        $fromDate = now()->addDays(2)->toDateString();
         $toDate = now()->addDay(15)->toDateString();
 
         $office = Office::factory()->create();

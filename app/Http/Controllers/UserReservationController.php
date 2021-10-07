@@ -55,7 +55,7 @@ class UserReservationController extends Controller
             'office_id' => ['required', 'integer'],
             'start_date' => ['required', 'date:Y-m-d', 'after:'.now()->addDay()->toDateString()],
             'end_date' => ['required', 'date:Y-m-d', 'after:start_date'],
-        ]);
+        ])->validate();
 
         try {
             $office = Office::findOrFail(request('office_id'));
