@@ -53,7 +53,7 @@ class UserReservationController extends Controller
 
         validator(request()->all(), [
             'office_id' => ['required', 'integer'],
-            'start_date' => ['required', 'date:Y-m-d', 'after:'.now()->addDay()->toDateString()],
+            'start_date' => ['required', 'date:Y-m-d', 'after:today'],
             'end_date' => ['required', 'date:Y-m-d', 'after:start_date'],
         ])->validate();
 
