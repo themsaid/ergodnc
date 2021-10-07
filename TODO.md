@@ -1,15 +1,9 @@
 # TODO
 
-[x] Convert filtering reservations by date to Eloquent Scopes
-[x] Include reservations that started before range and ended after range while filtering
+[] You cannot make a reservation on a pending or a hidden office 
 
 ## Make Reservations Endpoint
 
-[x] Must be authenticated & email verified
-[x] Token (if exists) must allow `reservations.make`
-[x] Cannot make reservations on their own property
-[x] Validate no other reservation conflicts with the same time
-[] Use locks to make the process atomic
 [] Email user & host when a reservation is made
 [] Email user & host on reservation start day
 [] Generate WIFI password for new reservations (store encrypted)
