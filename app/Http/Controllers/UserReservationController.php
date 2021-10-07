@@ -76,12 +76,6 @@ class UserReservationController extends Controller
                 Carbon::parse(request('start_date'))->startOfDay()
             ) + 1;
 
-            if ($numberOfDays < 2) {
-                throw ValidationException::withMessages([
-                    'start_date' => 'You cannot make a reservation for only 1 day'
-                ]);
-            }
-
             if ($office->reservations()->activeBetween(request('start_date'), request('end_date'))->exists()) {
                 throw ValidationException::withMessages([
                     'office_id' => 'You cannot make a reservation during this time'

@@ -1,6 +1,7 @@
 # TODO
 
-[] You cannot make a reservation on a pending or a hidden office 
+[] You cannot make a reservation on a pending or a hidden office
+[] You cannot make a reservation on same day but can make a reservation on next day
 
 ## Make Reservations Endpoint
 
