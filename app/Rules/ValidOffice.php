@@ -21,7 +21,7 @@ class ValidOffice implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        return $this->office?->exists === true;
+        return $this->office && $this->office->exists;
     }
 
     /**
