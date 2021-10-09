@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ReservationResource;
 use App\Models\Office;
 use App\Models\Reservation;
+use App\Rules\NotOwnOffice;
+use App\Rules\NoReservationsForPeriod;
+use App\Rules\ValidOffice;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -51,36 +54,25 @@ class UserReservationController extends Controller
             Response::HTTP_FORBIDDEN
         );
 
+        /** @var null|Office $office */
+        $office = Office::query()->find(request('office_id'));
+
         validator(request()->all(), [
-            'office_id' => ['required', 'integer'],
+            'office_id' => [
+                'required',
+                'integer',
+                new ValidOffice($office),
+                new NotOwnOffice($office),
+                new NoReservationsForPeriod($office)
+            ],
             'start_date' => ['required', 'date:Y-m-d', 'after:today'],
             'end_date' => ['required', 'date:Y-m-d', 'after:start_date'],
         ])->validate();
 
-        try {
-            $office = Office::findOrFail(request('office_id'));
-        } catch (ModelNotFoundException $e) {
-            throw ValidationException::withMessages([
-                'office_id' => 'Invalid office_id'
-            ]);
-        }
-
-        if ($office->user_id == auth()->id()) {
-            throw ValidationException::withMessages([
-                'office_id' => 'You cannot make a reservation on your own office'
-            ]);
-        }
-
-        $reservation = Cache::lock('reservations_office_'.$office->id, 10)->block(3, function () use ($office) {
+        $reservation = Cache::lock('reservations_office_' . $office->id, 10)->block(3, function () use ($office) {
             $numberOfDays = Carbon::parse(request('end_date'))->endOfDay()->diffInDays(
-                Carbon::parse(request('start_date'))->startOfDay()
-            ) + 1;
-
-            if ($office->reservations()->activeBetween(request('start_date'), request('end_date'))->exists()) {
-                throw ValidationException::withMessages([
-                    'office_id' => 'You cannot make a reservation during this time'
-                ]);
-            }
+                    Carbon::parse(request('start_date'))->startOfDay()
+                ) + 1;
 
             $price = $numberOfDays * $office->price_per_day;
 
