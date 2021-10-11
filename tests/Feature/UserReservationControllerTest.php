@@ -225,6 +225,42 @@ class UserReservationControllerTest extends TestCase
     /**
      * @test
      */
+    public function itCannotMakeReservationOnOfficeThatIsPendingOrHidden()
+    {
+        $user = User::factory()->create();
+
+        $office = Office::factory()->create([
+            'approval_status' => Office::APPROVAL_PENDING
+        ]);
+
+        $office2 = Office::factory()->create([
+            'hidden' => true
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->postJson('/api/reservations', [
+            'office_id' => $office->id,
+            'start_date' => now()->addDay(),
+            'end_date' => now()->addDays(41),
+        ]);
+
+        $response2 = $this->postJson('/api/reservations', [
+            'office_id' => $office2->id,
+            'start_date' => now()->addDay(),
+            'end_date' => now()->addDays(41),
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['office_id' => 'You cannot make a reservation on a hidden office']);
+
+        $response2->assertUnprocessable()
+            ->assertJsonValidationErrors(['office_id' => 'You cannot make a reservation on a hidden office']);
+    }
+
+    /**
+     * @test
+     */
     public function itCannotMakeReservationLessThan2Days()
     {
         $user = User::factory()->create();
@@ -241,6 +277,27 @@ class UserReservationControllerTest extends TestCase
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(['end_date' => 'The end date must be a date after start date.']);
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotMakeReservationOnSameDay()
+    {
+        $user = User::factory()->create();
+
+        $office = Office::factory()->create();
+
+        $this->actingAs($user);
+
+        $response = $this->postJson('/api/reservations', [
+            'office_id' => $office->id,
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->addDays(3)->toDateString(),
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['start_date' => 'The start date must be a date after today.']);
     }
 
     /**

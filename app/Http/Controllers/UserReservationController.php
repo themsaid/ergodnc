@@ -51,14 +51,14 @@ class UserReservationController extends Controller
             Response::HTTP_FORBIDDEN
         );
 
-        validator(request()->all(), [
+        $data = validator(request()->all(), [
             'office_id' => ['required', 'integer'],
             'start_date' => ['required', 'date:Y-m-d', 'after:today'],
             'end_date' => ['required', 'date:Y-m-d', 'after:start_date'],
         ])->validate();
 
         try {
-            $office = Office::findOrFail(request('office_id'));
+            $office = Office::findOrFail($data['office_id']);
         } catch (ModelNotFoundException $e) {
             throw ValidationException::withMessages([
                 'office_id' => 'Invalid office_id'
@@ -71,12 +71,18 @@ class UserReservationController extends Controller
             ]);
         }
 
-        $reservation = Cache::lock('reservations_office_'.$office->id, 10)->block(3, function () use ($office) {
-            $numberOfDays = Carbon::parse(request('end_date'))->endOfDay()->diffInDays(
-                Carbon::parse(request('start_date'))->startOfDay()
+        if ($office->hidden || $office->approval_status == Office::APPROVAL_PENDING) {
+            throw ValidationException::withMessages([
+                'office_id' => 'You cannot make a reservation on a hidden office'
+            ]);
+        }
+
+        $reservation = Cache::lock('reservations_office_'.$office->id, 10)->block(3, function () use ($data, $office) {
+            $numberOfDays = Carbon::parse($data['end_date'])->endOfDay()->diffInDays(
+                Carbon::parse($data['start_date'])->startOfDay()
             ) + 1;
 
-            if ($office->reservations()->activeBetween(request('start_date'), request('end_date'))->exists()) {
+            if ($office->reservations()->activeBetween($data['start_date'], $data['end_date'])->exists()) {
                 throw ValidationException::withMessages([
                     'office_id' => 'You cannot make a reservation during this time'
                 ]);
@@ -91,8 +97,8 @@ class UserReservationController extends Controller
             return Reservation::create([
                 'user_id' => auth()->id(),
                 'office_id' => $office->id,
-                'start_date' => request('start_date'),
-                'end_date' => request('end_date'),
+                'start_date' => $data['start_date'],
+                'end_date' => $data['end_date'],
                 'status' => Reservation::STATUS_ACTIVE,
                 'price' => $price,
             ]);
