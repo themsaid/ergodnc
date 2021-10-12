@@ -13,6 +13,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -82,8 +83,8 @@ class UserReservationController extends Controller
 
         $reservation = Cache::lock('reservations_office_'.$office->id, 10)->block(3, function () use ($data, $office) {
             $numberOfDays = Carbon::parse($data['end_date'])->endOfDay()->diffInDays(
-                Carbon::parse($data['start_date'])->startOfDay()
-            ) + 1;
+                    Carbon::parse($data['start_date'])->startOfDay()
+                ) + 1;
 
             if ($office->reservations()->activeBetween($data['start_date'], $data['end_date'])->exists()) {
                 throw ValidationException::withMessages([
@@ -104,11 +105,35 @@ class UserReservationController extends Controller
                 'end_date' => $data['end_date'],
                 'status' => Reservation::STATUS_ACTIVE,
                 'price' => $price,
+                'wifi_password' => Str::random()
             ]);
         });
 
         Notification::send(auth()->user(), new NewUserReservation($reservation));
         Notification::send($office->user, new NewHostReservation($reservation));
+
+        return ReservationResource::make(
+            $reservation->load('office')
+        );
+    }
+
+    public function cancel(Reservation $reservation)
+    {
+        abort_unless(auth()->user()->tokenCan('reservations.cancel'),
+            Response::HTTP_FORBIDDEN
+        );
+
+        if ($reservation->user_id != auth()->id() ||
+            $reservation->status == Reservation::STATUS_CANCELLED ||
+            $reservation->start_date < now()->toDateString()) {
+            throw ValidationException::withMessages([
+                'reservation' => 'You cannot cancel this reservation'
+            ]);
+        }
+
+        $reservation->update([
+            'status' => Reservation::STATUS_CANCELLED
+        ]);
 
         return ReservationResource::make(
             $reservation->load('office')
