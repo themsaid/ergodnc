@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,5 +35,7 @@ class AppServiceProvider extends ServiceProvider
             'office' => Office::class,
             'user' => User::class
         ]);
+
+        Schema::defaultStringLength(191);
     }
 }
