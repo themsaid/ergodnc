@@ -33,6 +33,7 @@ class OfficeImageControllerTest extends TestCase
 
         $response->assertCreated();
 
+        // @TODO This test is failing and needs invistigation
 //        Storage::assertExists(
 //            $response->json('data.path')
 //        );
