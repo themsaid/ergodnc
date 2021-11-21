@@ -24,7 +24,14 @@ class OfficeControllerTest extends TestCase
      */
     public function itListsAllOfficesInPaginatedWay()
     {
-        Office::factory(30)->create();
+        $user = User::factory()->create();
+        $tags = Tag::factory(2)->create();
+        $tags2 = Tag::factory(2)->create();
+
+        Office::factory(30)->for($user)->create();
+
+        Office::factory()->for($user)->hasAttached($tags)->create();
+        Office::factory()->hasAttached($tags2)->create();
 
         $response = $this->get('/api/offices');
 
