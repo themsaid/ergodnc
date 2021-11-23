@@ -27,20 +27,24 @@ class DatabaseSeeder extends Seeder
          $office2 = Office::factory()->create();
          $office3 = Office::factory()->create();
 
-        $office1->images()->create([
-            'path' => 'storage/1.jpg'
+        $office1->update([
+            'featured_image_id' => $office1->images()->create([
+                'path' => '1.jpg'
+            ])->id
         ]);
 
-        $office2->images()->create([
-            'path' => 'storage/2.jpg'
+        $office2->update([
+            'featured_image_id' => $office2->images()->create([
+                'path' => '2.jpg'
+            ])->id
         ]);
 
-        $office3->images()->create([
-            'path' => 'storage/3.jpg'
+        $office3->update([
+            'featured_image_id' => $office3->images()->create([
+                'path' => '3.jpg'
+            ])->id
         ]);
 
-        Reservation::factory()->for($user)->for($office1)->create();
-        Reservation::factory()->for($user)->for($office2)->create();
         Reservation::factory()->for($user)->for($office3)->create();
     }
 }

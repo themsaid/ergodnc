@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 
 class ReservationResource extends JsonResource
 {
@@ -14,6 +15,12 @@ class ReservationResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'office' => OfficeResource::make($this->whenLoaded('office')),
+
+            $this->merge(Arr::except(parent::toArray($request), [
+
+            ]))
+        ];
     }
 }

@@ -27,7 +27,7 @@ class OfficeImageControllerTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->post("/api/offices/{$office->id}/images", [
+        $response = $this->post("/offices/{$office->id}/images", [
             'image' => UploadedFile::fake()->image('image.jpg')
         ]);
 
@@ -59,7 +59,7 @@ class OfficeImageControllerTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->deleteJson("/api/offices/{$office->id}/images/{$image->id}");
+        $response = $this->deleteJson("/offices/{$office->id}/images/{$image->id}");
 
         $response->assertOk();
 
@@ -83,7 +83,7 @@ class OfficeImageControllerTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->deleteJson("/api/offices/{$office->id}/images/{$image->id}");
+        $response = $this->deleteJson("/offices/{$office->id}/images/{$image->id}");
 
         $response->assertNotFound();
     }
@@ -102,7 +102,7 @@ class OfficeImageControllerTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->deleteJson("/api/offices/{$office->id}/images/{$image->id}");
+        $response = $this->deleteJson("/offices/{$office->id}/images/{$image->id}");
 
         $response->assertUnprocessable();
 
@@ -129,7 +129,7 @@ class OfficeImageControllerTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->deleteJson("/api/offices/{$office->id}/images/{$image->id}");
+        $response = $this->deleteJson("/offices/{$office->id}/images/{$image->id}");
 
         $response->assertUnprocessable();
 

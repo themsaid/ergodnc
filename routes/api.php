@@ -3,12 +3,20 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\{TagController,
+use App\Http\Controllers\{LoginController,
+    LogoutController,
+    RegisterController,
+    TagController,
     OfficeController,
     OfficeImageController,
     UserController,
     UserReservationController,
     HostReservationController};
+
+// Auth ...
+Route::post('/login', LoginController::class);
+Route::post('/register', RegisterController::class);
+Route::post('/logout', LogoutController::class);
 
 // Tags...
 Route::get('/tags', TagController::class);
