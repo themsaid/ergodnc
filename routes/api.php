@@ -16,7 +16,7 @@ use App\Http\Controllers\{LoginController,
 // Auth ...
 Route::post('/login', LoginController::class);
 Route::post('/register', RegisterController::class);
-Route::post('/logout', LogoutController::class);
+Route::post('/logout', LogoutController::class)->middleware(['auth:sanctum']);
 
 // Tags...
 Route::get('/tags', TagController::class);

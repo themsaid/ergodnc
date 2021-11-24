@@ -18,15 +18,21 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 class LogoutController extends Controller
 {
     public function __invoke()
     {
-        Auth::guard('web')->logout();
+        if (EnsureFrontendRequestsAreStateful::fromFrontend(request())) {
+            Auth::guard('web')->logout();
 
-        request()->session()->invalidate();
+            request()->session()->invalidate();
 
-        request()->session()->regenerateToken();
+            request()->session()->regenerateToken();
+        } else {
+            // Revoke token
+        }
+
     }
 }
