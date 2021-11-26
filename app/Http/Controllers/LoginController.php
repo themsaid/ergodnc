@@ -31,7 +31,11 @@ class LoginController extends Controller
 
     private function authenticateFrontend()
     {
-        if (! Auth::guard('web')->attempt(request()->only('email', 'password'), request()->boolean('remember'))) {
+        if (! Auth::guard('web')
+            ->attempt(
+                request()->only('email', 'password'),
+                request()->boolean('remember')
+            )) {
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
