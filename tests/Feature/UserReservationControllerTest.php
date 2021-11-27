@@ -8,9 +8,6 @@ use App\Models\User;
 use App\Notifications\NewHostReservation;
 use App\Notifications\NewUserReservation;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -28,7 +25,7 @@ class UserReservationControllerTest extends TestCase
         [$reservation] = Reservation::factory()->for($user)->count(2)->create();
 
         $image = $reservation->office->images()->create([
-            'path' => 'office_image.jpg'
+            'path' => 'office_image.jpg',
         ]);
 
         $reservation->office()->update(['featured_image_id' => $image->id]);
@@ -117,7 +114,7 @@ class UserReservationControllerTest extends TestCase
         $user = User::factory()->create();
 
         $reservation = Reservation::factory()->for($user)->create([
-            'status' => Reservation::STATUS_ACTIVE
+            'status' => Reservation::STATUS_ACTIVE,
         ]);
 
         $reservation2 = Reservation::factory()->for($user)->cancelled()->create();
@@ -233,11 +230,11 @@ class UserReservationControllerTest extends TestCase
         $user = User::factory()->create();
 
         $office = Office::factory()->create([
-            'approval_status' => Office::APPROVAL_PENDING
+            'approval_status' => Office::APPROVAL_PENDING,
         ]);
 
         $office2 = Office::factory()->create([
-            'hidden' => true
+            'hidden' => true,
         ]);
 
         $this->actingAs($user);
@@ -375,5 +372,120 @@ class UserReservationControllerTest extends TestCase
         Notification::assertSentTo($office->user, NewHostReservation::class);
 
         $response->assertCreated();
+    }
+
+    /** @test */
+    public function itDoesNotAllowCancellationOfReservationsThatIsCancelled()
+    {
+        $user = User::factory()->create();
+
+        $office = Office::factory()->create();
+
+        $reservation = Reservation::factory()->for($office)->for($user)->create([
+            'status' => Reservation::STATUS_CANCELLED,
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->deleteJson('/api/reservations/'.$reservation->id);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['reservation' => 'You cannot cancel this reservation']);
+        $this->assertModelExists($reservation);
+        $this->assertDatabaseHas('reservations', [
+            'id' => $reservation->id,
+        ]);
+    }
+
+    /** @test */
+    public function itDoesNotAllowCancellationOfReservationsThatHasStarted()
+    {
+        $user = User::factory()->create();
+
+        $office = Office::factory()->create();
+
+        $reservation = Reservation::factory()->for($office)->for($user)->create([
+            'start_date' => now()->addDays(-1)->toDateString(),
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->deleteJson('/api/reservations/'.$reservation->id);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['reservation' => 'You cannot cancel this reservation']);
+        $this->assertModelExists($reservation);
+        $this->assertDatabaseHas('reservations', [
+            'id' => $reservation->id,
+        ]);
+    }
+
+    /** @test */
+    public function itDoesNotAllowCancellationOfReservationsThatDoesNotBelongsToYou()
+    {
+        $user = User::factory()->create();
+        $new_user = User::factory()->create();
+
+        $office = Office::factory()->create();
+
+        $reservation = Reservation::factory()->for($office)->for($user)->create([
+            'status' => Reservation::STATUS_CANCELLED,
+        ]);
+
+        $this->actingAs($new_user);
+
+        $response = $this->deleteJson('/api/reservations/'.$reservation->id);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['reservation' => 'You cannot cancel this reservation']);
+        $this->assertModelExists($reservation);
+        $this->assertDatabaseHas('reservations', [
+            'id' => $reservation->id,
+        ]);
+    }
+
+    /** @test */
+    public function itCanclledReservationThatStartDateIsInFuture()
+    {
+        $user = User::factory()->create();
+
+        $office = Office::factory()->create();
+
+        $reservation = Reservation::factory()->for($office)->for($user)->create([
+            'start_date' => now()->addDay()->toDateString(),
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->deleteJson('/api/reservations/'.$reservation->id);
+
+        $response->assertOk()
+            ->assertStatus(200)
+            ->assertJsonPath('data.user_id', $user->id)
+            ->assertJsonPath('data.office_id', $office->id)
+            ->assertJsonPath('data.status', Reservation::STATUS_CANCELLED);
+    }
+
+    /** @test */
+    public function itCanclledReservationThatStartDateIsInFutureAndActive()
+    {
+        $user = User::factory()->create();
+
+        $office = Office::factory()->create();
+
+        $reservation = Reservation::factory()->for($office)->for($user)->create([
+            'status' => Reservation::STATUS_ACTIVE,
+            'start_date' => now()->addDay()->toDateString(),
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->deleteJson('/api/reservations/'.$reservation->id);
+
+        $response->assertOk()
+            ->assertStatus(200)
+            ->assertJsonPath('data.user_id', $user->id)
+            ->assertJsonPath('data.office_id', $office->id)
+            ->assertJsonPath('data.status', Reservation::STATUS_CANCELLED);
     }
 }
