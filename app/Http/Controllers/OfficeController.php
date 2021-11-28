@@ -2,50 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\OfficeResource;
+use App\Models\User;
 use App\Models\Office;
 use App\Models\Reservation;
-use App\Models\User;
+use Illuminate\Support\Arr;
+use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
+use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\OfficeResource;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Validators\OfficeValidator;
 use App\Notifications\OfficePendingApproval;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
+use App\Http\Pipelines\Orders\OrderByDistance;
 use Illuminate\Validation\ValidationException;
+use App\Http\Pipelines\Filtration\FilterByTags;
+use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Pipelines\Filtration\FilterByUserId;
+use App\Http\Pipelines\Filtration\OfficeAvailable;
+use App\Http\Pipelines\Filtration\FilterByVisitorId;
+use App\Http\Pipelines\Relationships\ReturnWithTags;
+use App\Http\Pipelines\Relationships\ReturnWithUser;
+use App\Http\Pipelines\Relationships\ReturnWithImages;
+use App\Http\Pipelines\Relationships\ReturnWithReservationsCount;
 
 class OfficeController extends Controller
 {
     public function index(): JsonResource
     {
-        $offices = Office::query()
-            ->when(request('user_id') && auth()->user() && request('user_id') == auth()->id(),
-                fn($builder) => $builder,
-                fn($builder) => $builder->where('approval_status', Office::APPROVAL_APPROVED)->where('hidden', false)
-            )
-            ->when(request('user_id'), fn($builder) => $builder->whereUserId(request('user_id')))
-            ->when(request('visitor_id'),
-                fn($builder) => $builder->whereRelation('reservations', 'user_id', '=', request('visitor_id'))
-            )
-            ->when(
-                request('lat') && request('lng'),
-                fn($builder) => $builder->nearestTo(request('lat'), request('lng')),
-                fn($builder) => $builder->orderBy('id', 'ASC')
-            )
-            ->when(request('tags'),
-                fn($builder) => $builder->whereHas(
-                    'tags',
-                    fn ($builder) => $builder->whereIn('id', request('tags')),
-                    '=',
-                    count(request('tags'))
-                )
-            )
-            ->with(['images', 'tags', 'user'])
-            ->withCount(['reservations' => fn($builder) => $builder->whereStatus(Reservation::STATUS_ACTIVE)])
-            ->paginate(20);
+        $offices = app(Pipeline::class)
+                ->send(Office::query())
+                ->through([
+                    OfficeAvailable::class,
+                    FilterByUserId::class,
+                    FilterByVisitorId::class,
+                    OrderByDistance::class,
+                    FilterByTags::class,
+                    ReturnWithImages::class,
+                    ReturnWithTags::class,
+                    ReturnWithUser::class,
+                    ReturnWithReservationsCount::class,
+                ])
+                ->thenReturn()
+                ->paginate(request('per_page', 20));
 
         return OfficeResource::collection(
             $offices
