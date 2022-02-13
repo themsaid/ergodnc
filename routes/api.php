@@ -25,20 +25,28 @@ Route::get('/tags', TagController::class);
 Route::get('/user', UserController::class)->middleware(['auth:sanctum']);
 
 // Offices...
-Route::get('/offices', [OfficeController::class, 'index']);
-Route::get('/offices/{office}', [OfficeController::class, 'show']);
-Route::post('/offices', [OfficeController::class, 'create'])->middleware(['auth:sanctum', 'verified']);
-Route::put('/offices/{office}', [OfficeController::class, 'update'])->middleware(['auth:sanctum', 'verified']);
-Route::delete('/offices/{office}', [OfficeController::class, 'delete'])->middleware(['auth:sanctum', 'verified']);
+Route::controller(OfficeController::class)->prefix('offices')->group(function (){
+    Route::get('', 'index');
+    Route::get('/{office}', 'show');
+    Route::middleware('auth:sanctum')->group(function (){         
+        Route::post('/', 'create')->middleware(['auth:sanctum', 'verified']);
+        Route::put('/{office}', 'update')->middleware(['auth:sanctum', 'verified']);
+        Route::delete('/{office}', 'delete')->middleware(['auth:sanctum', 'verified']);
+    });
+});
 
 // Office Photos...
-Route::post('/offices/{office}/images', [OfficeImageController::class, 'store'])->middleware(['auth:sanctum', 'verified']);
-Route::delete('/offices/{office}/images/{image:id}', [OfficeImageController::class, 'delete'])->middleware(['auth:sanctum', 'verified']);
+Route::controller(OfficeImageController::class)->prefix('offices')->middleware(['auth:sanctum', 'verified'])->group(function (){
+    Route::post('/{office}/images', 'store');
+    Route::delete('/{office}/images/{image:id}', 'delete');
+});
 
 // User Reservations...
-Route::get('/reservations', [UserReservationController::class, 'index'])->middleware(['auth:sanctum', 'verified']);
-Route::post('/reservations', [UserReservationController::class, 'create'])->middleware(['auth:sanctum', 'verified']);
-Route::delete('/reservations/{reservation}', [UserReservationController::class, 'cancel'])->middleware(['auth:sanctum', 'verified']);
+Route::controller(UserReservationController::class)->prefix('reservations')->middleware(['auth:sanctum', 'verified'])->group(function (){
+    Route::get('/', 'index');
+    Route::post('/reservations', 'create');
+    Route::delete('/reservations/{reservation}', 'cancel');
+});
 
 // Host Reservations...
 Route::get('/host/reservations', [HostReservationController::class, 'index']);
